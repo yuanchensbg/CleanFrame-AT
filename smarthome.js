@@ -1,104 +1,88 @@
+// Smart Home: Shelly (lokal) und Govee (Cloud-API), Geräte in smarthome.json
 let smarthomeData = null;
 let activeRoom = 0;
+
+const ICONS = {
+  plug: '<svg viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2V16h5v-.2c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 3z"/></svg>',
+};
 
 async function initSmartHome() {
   try {
     const res = await fetch('smarthome.json');
     smarthomeData = await res.json();
     renderRooms();
-    renderDevices(0);
+    renderDevices();
   } catch (e) {
     console.log('Smart Home nicht geladen:', e.message);
   }
 }
 
+function goveeReady() {
+  return smarthomeData.goveeApiKey && smarthomeData.goveeApiKey !== 'HIER_API_KEY_EINTRAGEN';
+}
+
 function renderRooms() {
-  const tabBar = document.getElementById('sh-tabs');
-  if (!tabBar || !smarthomeData) return;
-  tabBar.innerHTML = '';
+  const bar = document.getElementById('sh-tabs');
+  bar.innerHTML = '';
+  if (smarthomeData.rooms.length < 2) return;
   smarthomeData.rooms.forEach((room, i) => {
     const btn = document.createElement('button');
-    btn.className = 'sh-tab' + (i === 0 ? ' active' : '');
+    btn.className = 'sh-tab' + (i === activeRoom ? ' active' : '');
     btn.textContent = room.name;
-    btn.tabIndex = 0;
-    btn.addEventListener('click', () => selectRoom(i));
-    tabBar.appendChild(btn);
+    btn.dataset.nav = '';
+    btn.addEventListener('click', () => { activeRoom = i; renderRooms(); renderDevices(); });
+    bar.appendChild(btn);
   });
 }
 
-function selectRoom(index) {
-  activeRoom = index;
-  document.querySelectorAll('.sh-tab').forEach((t, i) => t.classList.toggle('active', i === index));
-  renderDevices(index);
+function deviceState(device) {
+  if (device.type === 'govee' && !goveeReady()) return 'API-Key fehlt';
+  if (!device.on) return 'Aus';
+  return device.type === 'govee' ? `An · ${Math.round(device.brightness)} %` : 'An';
 }
 
-function renderDevices(roomIndex) {
-  const grid = document.getElementById('sh-devices');
-  if (!grid || !smarthomeData) return;
-  const room = smarthomeData.rooms[roomIndex];
-  grid.innerHTML = '';
+function renderDevices() {
+  const list = document.getElementById('sh-devices');
+  const room = smarthomeData.rooms[activeRoom];
+  list.innerHTML = '';
 
   room.devices.forEach(device => {
-    const card = document.createElement('div');
-    card.className = 'sh-device' + (device.on ? ' on' : '');
-    card.tabIndex = 0;
-    card.dataset.id = device.id;
-
-    if (device.type === 'shelly') {
-      card.innerHTML = `
-        <div class="sh-device-icon">🔌</div>
-        <div class="sh-device-name">${device.name}</div>
-        <div class="sh-device-status">${device.on ? 'An' : 'Aus'}</div>
-      `;
-      card.addEventListener('click', () => toggleShelly(device, card));
-    } else if (device.type === 'govee') {
-      const isConfigured = smarthomeData.goveeApiKey !== 'HIER_API_KEY_EINTRAGEN';
-      card.innerHTML = `
-        <div class="sh-device-icon">${device.on ? '💡' : '🔦'}</div>
-        <div class="sh-device-name">${device.name}</div>
-        <div class="sh-device-status">${!isConfigured ? 'API Key fehlt' : device.on ? Math.round(device.brightness) + '%' : 'Aus'}</div>
-        ${device.on && isConfigured ? `<div class="sh-brightness-bar"><div class="sh-brightness-fill" style="width:${device.brightness}%"></div></div>` : ''}
-      `;
-      if (isConfigured) card.addEventListener('click', () => toggleGovee(device, card));
-    }
-
-    card.addEventListener('keydown', e => e.key === 'Enter' && card.click());
-    grid.appendChild(card);
+    const row = document.createElement('div');
+    row.className = 'sh-device' + (device.on ? ' is-on' : '');
+    row.dataset.nav = '';
+    row.innerHTML = `
+      <div class="row-icon">${device.type === 'shelly' ? ICONS.plug : ICONS.bulb}</div>
+      <div class="row-text">
+        <div class="row-name">${device.name}</div>
+        <div class="row-state">${deviceState(device)}</div>
+        ${device.type === 'govee' && device.on ? `<div class="bright-bar"><div class="bright-fill" style="width:${device.brightness}%"></div></div>` : ''}
+      </div>
+      <div class="toggle${device.on ? ' on' : ''}"><div class="toggle-knob"></div></div>
+    `;
+    row.addEventListener('click', () => toggleDevice(device, row));
+    list.appendChild(row);
   });
 }
 
-// ── Shelly (lokal, kein Cloud nötig) ────────────────────────────────────
-async function toggleShelly(device, card) {
+async function toggleDevice(device, row) {
+  if (device.type === 'govee' && !goveeReady()) return;
   device.on = !device.on;
-  const action = device.on ? 'on' : 'off';
-  try {
-    await fetch(`http://${device.ip}/relay/0?turn=${action}`, { mode: 'no-cors' });
-  } catch (_) {}
-  renderDevices(activeRoom);
-}
+  row.classList.toggle('is-on', device.on);
+  row.querySelector('.toggle').classList.toggle('on', device.on);
+  row.querySelector('.row-state').textContent = deviceState(device);
 
-// ── Govee (Cloud API) ────────────────────────────────────────────────────
-async function toggleGovee(device, card) {
-  device.on = !device.on;
   try {
-    await fetch('https://developer-api.govee.com/v1/devices/control', {
-      method: 'PUT',
-      headers: {
-        'Govee-API-Key': smarthomeData.goveeApiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        device: device.deviceId,
-        model: device.model,
-        cmd: { name: 'turn', value: device.on ? 'on' : 'off' },
-      }),
-    });
-  } catch (_) {}
-  renderDevices(activeRoom);
-}
-
-function alexaCommand(cmd) {
-  if (window.Android && window.Android.alexaCommand) window.Android.alexaCommand(cmd);
+    if (device.type === 'shelly') {
+      await fetch(`http://${device.ip}/relay/0?turn=${device.on ? 'on' : 'off'}`, { mode: 'no-cors' });
+    } else if (device.type === 'govee') {
+      await fetch('https://developer-api.govee.com/v1/devices/control', {
+        method: 'PUT',
+        headers: { 'Govee-API-Key': smarthomeData.goveeApiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device: device.deviceId, model: device.model, cmd: { name: 'turn', value: device.on ? 'on' : 'off' } }),
+      });
+    }
+  } catch (_) { /* Gerät nicht erreichbar */ }
 }
 
 initSmartHome();
