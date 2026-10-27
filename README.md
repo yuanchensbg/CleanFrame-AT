@@ -1,64 +1,35 @@
 # CleanFrame AT
 
-Minimalistischer TV-Launcher für Fire TV Stick — inspiriert von Apple TV.  
-Optimiert für Österreich. Läuft über GitHub Pages, Updates ohne APK-Neubau.
+Minimalistischer TV-Launcher für den Fire TV Stick im Stil von CleanFrame.
+Die Oberfläche liegt auf GitHub Pages. Änderungen an den Dateien sind beim nächsten Start auf dem TV, ohne die App neu zu installieren.
 
-## Wie Updates funktionieren
+## Funktionen
 
-1. Datei auf GitHub bearbeiten (z.B. `apps.json`)
-2. Speichern / Commit
-3. Beim nächsten TV-Start lädt der Launcher automatisch die neue Version
+- Dock mit Lieblings-Apps; nicht installierte Apps öffnen ihre Seite im Amazon Appstore
+- Art Mode: Landschaftsbilder im Vollbild, startet nach Inaktivität, Links/Rechts blättert, jede andere Taste führt zurück
+- Alle installierten Apps als Raster
+- Smart Home: Ambilight, Shelly, Govee
+- Netzwerkstatus, Einstellungen, Live-Wetter, Navigationston
 
-## Apps anpassen (`apps.json`)
+## Anpassen
 
-Jeder Eintrag hat:
-- `name` — Anzeigename
-- `icon` — Zeichen oder Buchstabe
-- `color` — Farbe des Icons (Hex)
-- `package` — Android Package-Name der App
+| Datei | Inhalt |
+|---|---|
+| `apps.json` | Apps im Dock (Name, Logo, Android-Paketname) |
+| `config.js` | Stadt fürs Wetter, Art-Mode-Zeiten, Hintergrundbilder, Töne |
+| `smarthome.json` | Smart-Home-Geräte und Govee-API-Key |
+| `ambilight.js` | IP-Adresse des Philips-TVs |
 
-Häufige Package-Namen:
-```
-Netflix:      com.netflix.ninja
-YouTube:      com.google.android.youtube.tv
-Prime Video:  com.amazon.avod.thirdpartyclient
-Disney+:      com.disney.disneyplus
-ORF ON:       at.orf.tvthek
-Kodi:         org.xbmc.kodi
-Spotify:      com.spotify.tv.android
-```
+## Auf dem Fire TV installieren
 
-## Ambilight einrichten (`ambilight.js`)
+Die App wird bei jeder Änderung im Ordner `android/` automatisch von GitHub gebaut.
 
-1. IP-Adresse deines Philips TVs herausfinden (Router → verbundene Geräte)
-2. In `ambilight.js` ganz oben eintragen:
-   ```js
-   const PHILIPS_TV_IP = '192.168.1.XXX';
-   ```
-3. Auf GitHub speichern
+1. Fire TV: Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** erlauben
+   (Entwickleroptionen erscheinen nach 7× Klicken auf „Info“ → Name des Fire TV)
+2. Im Amazon Appstore die App **Downloader** installieren
+3. In Downloader diese Adresse eingeben:
+   `https://github.com/yuanchensbg/CleanFrame-AT/releases/latest/download/cleanframe.apk`
+4. Installieren, danach erscheint **CleanFrame** in „Deine Apps“
+5. CleanFrame an die erste Stelle der App-Reihe verschieben
 
-## APK einmalig bauen und installieren
-
-**Voraussetzungen:**
-- Android Studio installiert
-- Fire TV Stick: Einstellungen → Mein Fire TV → Entwickleroptionen → ADB-Debugging AN
-
-**Schritte:**
-```bash
-# Im android/ Ordner:
-./gradlew assembleDebug
-
-# APK auf Fire TV Stick installieren (IP des Sticks aus Router holen):
-adb connect 192.168.1.XXX
-adb install app/build/outputs/apk/debug/app-debug.apk
-```
-
-**Als Standard-Launcher setzen:**  
-Nach der Installation fragt der Fire TV Stick welcher Launcher genutzt werden soll → CleanFrame wählen → "Immer".
-
-## GitHub Pages einrichten
-
-1. Repo auf GitHub erstellen
-2. Settings → Pages → Source: main branch / root
-3. URL (`https://dein-name.github.io/CleanFrame-AT/`) in `MainActivity.kt` eintragen
-4. APK neu bauen und installieren (nur dieses eine Mal nötig)
+Hinweis: Amazon erlaubt auf aktuellen Fire-OS-Versionen nicht, den Home-Bildschirm dauerhaft zu ersetzen. Die Home-Taste führt deshalb weiter zum Amazon-Startbildschirm, CleanFrame startest du aus der App-Reihe.
