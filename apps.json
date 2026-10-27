@@ -1,12 +1,42 @@
 [
-  { "id": "netflix",   "name": "Netflix",     "icon": "N", "color": "#E50914", "package": "com.netflix.ninja" },
-  { "id": "youtube",   "name": "YouTube",     "icon": "▶", "color": "#FF0000", "package": "com.google.android.youtube.tv" },
-  { "id": "prime",     "name": "Prime Video", "icon": "P", "color": "#00A8E0", "package": "com.amazon.avod.thirdpartyclient" },
-  { "id": "disney",    "name": "Disney+",     "icon": "D", "color": "#113CCF", "package": "com.disney.disneyplus" },
-  { "id": "orf",       "name": "ORF ON",      "icon": "O", "color": "#CC0000", "package": "at.orf.tvthek" },
-  { "id": "servus",    "name": "ServusTV",    "icon": "S", "color": "#D40000", "package": "com.redbull.tv" },
-  { "id": "joyn",      "name": "Joyn",        "icon": "J", "color": "#6200EE", "package": "de.prosiebensat1digital.joyn" },
-  { "id": "spotify",   "name": "Spotify",     "icon": "♫", "color": "#1DB954", "package": "com.spotify.tv.android" },
-  { "id": "kodi",      "name": "Kodi",        "icon": "K", "color": "#17B2E8", "package": "org.xbmc.kodi" },
-  { "id": "browser",   "name": "Browser",     "icon": "⊕", "color": "#888888", "package": "com.amazon.cloud9" }
+  {
+    "id": "netflix", "name": "Netflix", "package": "com.netflix.ninja",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#141414'/><path d='M14 12h8.5l8 22.5V12H38v36h-8L22 25.5V48H14z' fill='#E50914'/><path d='M30 12h8v36h-8z' fill='#E50914' opacity='.6'/></svg>"
+  },
+  {
+    "id": "youtube", "name": "YouTube", "package": "com.google.android.youtube.tv",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#FF0000'/><path d='M48 30s0-8-1-11.5c-.6-2-2.3-3.6-4.3-4.1C39.3 14 30 14 30 14s-9.3 0-12.7.4c-2 .5-3.7 2.1-4.3 4.1C12 22 12 30 12 30s0 8 1 11.5c.6 2 2.3 3.5 4.3 4C20.7 46 30 46 30 46s9.3 0 12.7-.5c2-.5 3.7-2 4.3-4C49 38 48 30 48 30z' fill='white'/><path d='M26 23l12 7-12 7V23z' fill='#FF0000'/></svg>"
+  },
+  {
+    "id": "prime", "name": "Prime Video", "package": "com.amazon.avod.thirdpartyclient",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#00A8E0'/><path d='M12 28h10c3 0 5 1.5 5 4.5S25 37 22 37h-4v7H12V28zm6 7h3c1.5 0 2.5-.5 2.5-2s-1-2-2.5-2h-3v4z' fill='white'/><path d='M29 28h6.5c4 0 6.5 2.5 6.5 8S39.5 44 35.5 44H29V28zm6 4h-3v8h3c2.5 0 3.5-1.5 3.5-4s-1-4-3.5-4z' fill='white'/><path d='M10 52c8 4 28 4 40-2' stroke='#FF9900' stroke-width='2.5' stroke-linecap='round' fill='none'/></svg>"
+  },
+  {
+    "id": "disney", "name": "Disney+", "package": "com.disney.disneyplus",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#0C1445'/><text x='10' y='40' font-family='Georgia,serif' font-size='26' font-style='italic' font-weight='bold' fill='white'>D+</text><path d='M8 44h44' stroke='#1E4BD2' stroke-width='1'/></svg>"
+  },
+  {
+    "id": "orf", "name": "ORF ON", "package": "at.orf.tvthek",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#E2001A'/><text x='5' y='38' font-family='Arial Black,Arial' font-size='22' font-weight='900' fill='white'>ORF</text><text x='10' y='52' font-family='Arial,sans-serif' font-size='11' fill='rgba(255,255,255,0.75)'>ON</text></svg>"
+  },
+  {
+    "id": "servus", "name": "ServusTV", "package": "com.redbull.tv",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#1A1A1A'/><text x='13' y='38' font-family='Arial Black,Arial' font-size='28' font-weight='900' fill='#CC0000'>S</text><text x='7' y='52' font-family='Arial,sans-serif' font-size='8.5' fill='rgba(255,255,255,0.5)'>SERVUS TV</text></svg>"
+  },
+  {
+    "id": "joyn", "name": "Joyn", "package": "de.prosiebensat1digital.joyn",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#6200EE'/><circle cx='30' cy='28' r='12' fill='white' opacity='.15'/><text x='17' y='38' font-family='Arial Black,Arial' font-size='26' font-weight='900' fill='white'>J</text><text x='10' y='52' font-family='Arial,sans-serif' font-size='9' fill='rgba(255,255,255,0.55)'>JOYN</text></svg>"
+  },
+  {
+    "id": "spotify", "name": "Spotify", "package": "com.spotify.tv.android",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#191414'/><circle cx='30' cy='30' r='18' fill='#1DB954'/><path d='M20 24c5-2 13-2 18 1' stroke='white' stroke-width='2.8' stroke-linecap='round' fill='none'/><path d='M21 30c4-1.5 11-1.5 15 1' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/><path d='M22 36c3-1 9-1 12 .5' stroke='white' stroke-width='2.2' stroke-linecap='round' fill='none'/></svg>"
+  },
+  {
+    "id": "kodi", "name": "Kodi", "package": "org.xbmc.kodi",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#17B2E8'/><path d='M14 14l10 16-10 16h8l6-10 6 10h8L32 30l10-16h-8l-6 10-6-10z' fill='white'/></svg>"
+  },
+  {
+    "id": "browser", "name": "Browser", "package": "com.amazon.cloud9",
+    "svg": "<svg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><rect width='60' height='60' rx='13' fill='#2D2D2D'/><circle cx='30' cy='30' r='16' stroke='white' stroke-width='2' fill='none'/><ellipse cx='30' cy='30' rx='7' ry='16' stroke='white' stroke-width='1.5' fill='none'/><path d='M14 30h32M16 22h28M16 38h28' stroke='white' stroke-width='1.5' fill='none'/></svg>"
+  }
 ]

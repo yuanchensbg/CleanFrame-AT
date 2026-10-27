@@ -4,246 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CleanFrame AT</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --glass: rgba(255,255,255,0.06);
-      --glass-hover: rgba(255,255,255,0.11);
-      --glass-border: rgba(255,255,255,0.1);
-      --glass-border-hover: rgba(255,255,255,0.22);
-      --text: #ffffff;
-      --text-sub: rgba(255,255,255,0.5);
-      --text-dim: rgba(255,255,255,0.25);
-      --ambi: #ff7c3a;
-      --radius: 20px;
-    }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      background: #000;
-      color: var(--text);
-    }
-
-    /* Hintergrundbilder */
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-    }
-
-    .bg-slide {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-    }
-
-    .bg-slide.active { opacity: 1; }
-
-    /* Dunkler Overlay — dezent, damit Foto sichtbar bleibt */
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.35) 0%,
-        rgba(0,0,0,0.1) 40%,
-        rgba(0,0,0,0.5) 100%
-      );
-    }
-
-    /* Layout */
-    .launcher {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      padding: 52px 64px 40px;
-    }
-
-    /* Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .clock {
-      font-size: 96px;
-      font-weight: 100;
-      letter-spacing: -6px;
-      line-height: 1;
-      color: #fff;
-      text-shadow: 0 2px 40px rgba(0,0,0,0.4);
-    }
-
-    .date {
-      font-size: 15px;
-      color: var(--text-sub);
-      margin-top: 12px;
-      font-weight: 300;
-      letter-spacing: 0.2px;
-    }
-
-    /* Mitte: leer — zeigt das Foto */
-    .spacer { flex: 1; }
-
-    /* App-Grid */
-    .section-label {
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 3.5px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .app-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-
-    .app-tile {
-      background: var(--glass);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 24px 14px 18px;
-      text-align: center;
-      cursor: pointer;
-      outline: none;
-      transition: background 0.2s, border-color 0.2s, transform 0.18s;
-    }
-
-    .app-tile:hover,
-    .app-tile:focus {
-      background: var(--glass-hover);
-      border-color: var(--glass-border-hover);
-      transform: scale(1.05) translateY(-3px);
-    }
-
-    .app-tile:active { transform: scale(0.97); }
-
-    .app-icon-wrap {
-      width: 60px;
-      height: 60px;
-      border-radius: 13px;
-      margin: 0 auto 12px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .app-icon-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 13px;
-    }
-
-    .app-name {
-      font-size: 11px;
-      color: var(--text-sub);
-      font-weight: 400;
-      letter-spacing: 0.2px;
-    }
-
-    /* Footer */
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .ambilight-control { display: flex; align-items: center; gap: 12px; }
-
-    .ambi-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--ambi);
-      box-shadow: 0 0 10px var(--ambi);
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-    .ambi-dot.off { background: #333; box-shadow: none; }
-
-    .ambi-label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.3px; }
-
-    .toggle {
-      width: 44px; height: 26px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 13px;
-      position: relative;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.1);
-      transition: background 0.25s, border-color 0.25s;
-    }
-    .toggle.on { background: rgba(232,114,58,0.25); border-color: var(--ambi); }
-
-    .toggle-knob {
-      width: 20px; height: 20px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 50%;
-      position: absolute;
-      top: 2px; left: 2px;
-      transition: left 0.25s, background 0.25s;
-    }
-    .toggle.on .toggle-knob { left: 20px; background: var(--ambi); }
-
-    .footer-btn {
-      font-size: 11px;
-      color: var(--text-dim);
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 8px 18px;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: 0.3px;
-      backdrop-filter: blur(10px);
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .footer-btn:hover {
-      background: rgba(255,255,255,0.1);
-      color: var(--text-sub);
-      border-color: rgba(255,255,255,0.15);
-      outline: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Hintergrund -->
+  <!-- Hintergrund: Ken-Burns Slideshow -->
   <div class="bg" id="bg"></div>
   <div class="bg-overlay"></div>
 
   <div class="launcher">
+
+    <!-- Header: Uhr + Datum -->
     <header class="header">
-      <div>
+      <div class="header-left">
         <div class="clock" id="clock">--:--</div>
         <div class="date" id="date"></div>
       </div>
+      <div class="header-right">
+        <div class="alexa-btn" onclick="alexaCommand('open alexa')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+            <path d="M12 7v5l3 3" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Alexa
+        </div>
+      </div>
     </header>
 
-    <div class="spacer"></div>
-
-    <main>
+    <!-- App-Bereich -->
+    <section class="section">
       <div class="section-label">Apps</div>
       <div class="app-grid" id="app-grid"></div>
-    </main>
+    </section>
 
+    <!-- Smart Home -->
+    <section class="section sh-section">
+      <div class="section-header">
+        <div class="section-label">Smart Home</div>
+        <div class="sh-tabs" id="sh-tabs"></div>
+      </div>
+      <div class="sh-devices" id="sh-devices"></div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
       <div class="ambilight-control">
         <div class="ambi-dot" id="ambi-dot"></div>
@@ -252,80 +55,125 @@
           <div class="toggle-knob"></div>
         </div>
       </div>
-      <button class="footer-btn" onclick="launchApp('com.amazon.firelauncher')">Amazon-Modus</button>
+      <div class="footer-right">
+        <button class="footer-btn" onclick="launchApp('com.amazon.firelauncher')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-right:6px">
+            <rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="13" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          Amazon-Modus
+        </button>
+      </div>
     </footer>
+
   </div>
 
   <script src="ambilight.js"></script>
+  <script src="smarthome.js"></script>
   <script>
-    // Hintergrundbilder — kuratierte Landschaftsfotos von Unsplash
+    // ── Hintergrund: Ken-Burns Slideshow ──────────────────────────────────
     const PHOTOS = [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=85',
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=85',
-      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=85',
-      'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&q=85',
-      'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=1920&q=85',
-      'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1920&q=85',
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1920&q=85',
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=85',
+      'photo-1506905925346-21bda4d32df4', // Schweizer Alpen
+      'photo-1464822759023-fed622ff2c3b', // Bergspitzen
+      'photo-1476514525535-07fb3b4ae5f1', // Bergsee
+      'photo-1501854140801-50d01698950b', // Küste
+      'photo-1518173946687-a4c8892bbd9f', // Sonnenaufgang Berge
+      'photo-1470770841072-f978cf4d019e', // Spiegelung See
+      'photo-1500534314209-a25ddb2bd429', // Grünes Tal
+      'photo-1441974231531-c6227db76b6e', // Wald
+      'photo-1494500764479-0c8f2919a3d8', // Nordlichter
+      'photo-1507525428034-b723cf961d3e', // Tropischer Strand
     ];
 
-    // Slides erstellen
     const bgEl = document.getElementById('bg');
-    const slides = PHOTOS.map((url, i) => {
+    const KB_DIRS = [
+      'scale(1.08) translate(-2%, -2%)',
+      'scale(1.08) translate(2%, -2%)',
+      'scale(1.08) translate(-2%, 2%)',
+      'scale(1.08) translate(2%, 2%)',
+    ];
+
+    const slides = PHOTOS.map((id, i) => {
       const div = document.createElement('div');
       div.className = 'bg-slide' + (i === 0 ? ' active' : '');
-      div.style.backgroundImage = `url(${url})`;
+      div.style.backgroundImage = `url(https://images.unsplash.com/${id}?w=1920&q=85&fit=crop)`;
+      div.style.transform = KB_DIRS[i % KB_DIRS.length];
       bgEl.appendChild(div);
       return div;
     });
 
-    let current = 0;
-    setInterval(() => {
-      slides[current].classList.remove('active');
-      current = (current + 1) % slides.length;
-      slides[current].classList.add('active');
-    }, 30000);
+    let cur = 0;
+    function nextSlide() {
+      slides[cur].classList.remove('active');
+      cur = (cur + 1) % slides.length;
+      slides[cur].classList.add('active');
+      slides[cur].style.transform = KB_DIRS[cur % KB_DIRS.length];
+    }
+    setInterval(nextSlide, 45000);
 
-    // Uhr
-    function updateClock() {
+    // ── Uhr ───────────────────────────────────────────────────────────────
+    function tick() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
       document.getElementById('clock').textContent = h + ':' + m;
-      const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-      const months = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+      const DAYS  = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+      const MONTHS= ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
       document.getElementById('date').textContent =
-        days[now.getDay()] + ', ' + now.getDate() + '. ' + months[now.getMonth()];
+        DAYS[now.getDay()] + ', ' + now.getDate() + '. ' + MONTHS[now.getMonth()];
     }
-    updateClock();
-    setInterval(updateClock, 10000);
+    tick();
+    setInterval(tick, 10000);
 
-    // Apps laden
+    // ── Apps ──────────────────────────────────────────────────────────────
     fetch('apps.json')
       .then(r => r.json())
       .then(apps => {
         const grid = document.getElementById('app-grid');
-        apps.forEach(app => {
-          const div = document.createElement('div');
-          div.className = 'app-tile';
-          div.tabIndex = 0;
-          div.innerHTML = `
-            <div class="app-icon-wrap">
-              <img src="icons/${app.id}.png" alt="${app.name}"
-                onerror="this.style.display='none';this.parentNode.style.background='${app.color}22';this.parentNode.innerHTML='<span style=font-size:26px;color:${app.color}>${app.icon}</span>'">
-            </div>
+        apps.forEach((app, idx) => {
+          const tile = document.createElement('div');
+          tile.className = 'app-tile';
+          tile.tabIndex = 0;
+          tile.style.animationDelay = (idx * 0.05) + 's';
+          tile.innerHTML = `
+            <div class="app-icon-wrap">${app.svg}</div>
             <span class="app-name">${app.name}</span>
           `;
-          div.addEventListener('click', () => launchApp(app.package));
-          div.addEventListener('keydown', e => e.key === 'Enter' && launchApp(app.package));
-          grid.appendChild(div);
+          tile.addEventListener('click', () => launchApp(app.package));
+          tile.addEventListener('keydown', e => e.key === 'Enter' && launchApp(app.package));
+          grid.appendChild(tile);
         });
       });
 
+    // ── App starten ───────────────────────────────────────────────────────
     function launchApp(pkg) {
       if (window.Android) window.Android.launchApp(pkg);
     }
+
+    // ── Alexa ─────────────────────────────────────────────────────────────
+    function alexaCommand(cmd) {
+      if (window.Android && window.Android.alexaCommand) window.Android.alexaCommand(cmd);
+    }
+
+    // ── Fernbedienungs-Navigation ─────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      const focused = document.activeElement;
+      if (!focused) return;
+      const tiles = [...document.querySelectorAll('.app-tile, .sh-device, .sh-tab, .footer-btn, .alexa-btn')];
+      const idx = tiles.indexOf(focused);
+      if (idx === -1) { if (tiles.length) tiles[0].focus(); return; }
+
+      const COLS = 5;
+      let next = null;
+      if (e.key === 'ArrowRight') next = tiles[idx + 1];
+      else if (e.key === 'ArrowLeft') next = tiles[idx - 1];
+      else if (e.key === 'ArrowDown') next = tiles[idx + COLS] || tiles[idx + 1];
+      else if (e.key === 'ArrowUp')   next = tiles[idx - COLS] || tiles[idx - 1];
+
+      if (next) { e.preventDefault(); next.focus(); }
+    });
   </script>
 </body>
 </html>

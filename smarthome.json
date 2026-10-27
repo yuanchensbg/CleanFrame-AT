@@ -1,0 +1,34 @@
+{
+  "rooms": [
+    {
+      "id": "living",
+      "name": "Wohnzimmer",
+      "icon": "sofa",
+      "devices": [
+        { "id": "lw_decke",  "name": "Deckenlampe",  "type": "light",      "on": true,  "brightness": 80, "ip": "192.168.1.50" },
+        { "id": "lw_steh",   "name": "Stehlampe",    "type": "light",      "on": false, "brightness": 60, "ip": "192.168.1.51" },
+        { "id": "lw_thermo", "name": "Thermostat",   "type": "thermostat", "temp": 21,  "ip": "192.168.1.52" },
+        { "id": "lw_tv",     "name": "TV-Backlight", "type": "light",      "on": true,  "brightness": 100,"ip": "192.168.1.53" }
+      ]
+    },
+    {
+      "id": "bedroom",
+      "name": "Schlafzimmer",
+      "icon": "moon",
+      "devices": [
+        { "id": "sl_decke",  "name": "Deckenlampe",  "type": "light",      "on": false, "brightness": 40, "ip": "192.168.1.54" },
+        { "id": "sl_nacht",  "name": "Nachttischlampe","type": "light",    "on": false, "brightness": 20, "ip": "192.168.1.55" },
+        { "id": "sl_thermo", "name": "Thermostat",   "type": "thermostat", "temp": 19,  "ip": "192.168.1.56" }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Küche",
+      "icon": "chef",
+      "devices": [
+        { "id": "ku_arbeits","name": "Arbeitslampe",  "type": "light",      "on": true,  "brightness": 100,"ip": "192.168.1.57" },
+        { "id": "ku_unter",  "name": "Unterschrank",  "type": "light",      "on": false, "brightness": 70, "ip": "192.168.1.58" }
+      ]
+    }
+  ]
+}
