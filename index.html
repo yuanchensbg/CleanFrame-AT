@@ -86,6 +86,31 @@
     <div class="all-apps" id="all-apps"></div>
   </section>
 
+  <!-- Eigene Webseiten -->
+  <section class="overlay" id="overlay-web" aria-hidden="true">
+    <h2 class="overlay-title">Webseite hinzufügen</h2>
+    <div class="web-layout">
+      <div class="web-form">
+        <label class="field" data-nav>
+          <span class="field-label">Name</span>
+          <input id="web-name" type="text" maxlength="20" placeholder="ORF News" autocomplete="off">
+        </label>
+        <label class="field" data-nav>
+          <span class="field-label">Adresse</span>
+          <input id="web-url" type="url" placeholder="news.orf.at" autocomplete="off">
+        </label>
+        <div class="field-label glyph-title">Symbol</div>
+        <div class="glyphs" id="web-glyphs"></div>
+        <div class="form-error" id="web-error"></div>
+        <button class="pill" data-nav id="web-save">Zum Startbildschirm hinzufügen</button>
+      </div>
+      <div class="web-saved">
+        <div class="field-label">Gespeichert</div>
+        <div class="web-list" id="web-list"></div>
+      </div>
+    </div>
+  </section>
+
   <script src="config.js"></script>
   <script src="weather.js"></script>
   <script src="smarthome.js"></script>

@@ -246,8 +246,10 @@ body.sheet-open .home { opacity: 0.35; }
   transition: opacity .35s ease;
   overflow-y: auto; scrollbar-width: none;
 }
-body.apps-open .overlay { opacity: 1; pointer-events: auto; }
-body.apps-open .home { opacity: 0; }
+body.apps-open #overlay-apps,
+body.web-open #overlay-web { opacity: 1; pointer-events: auto; }
+body.apps-open .home,
+body.web-open .home { opacity: 0; }
 
 .overlay-title { font-size: 4.4rem; font-weight: 600; letter-spacing: -0.06rem; margin-bottom: 4rem; }
 
@@ -265,3 +267,74 @@ body.apps-open .home { opacity: 0; }
 .app-item.focused .app-banner { transform: scale(1.07); box-shadow: 0 0 0 0.4rem #fff, 0 2rem 5rem rgba(0,0,0,0.5); }
 .app-label { font-size: 2.2rem; font-weight: 500; color: var(--soft); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .app-item.focused .app-label { color: #fff; }
+
+/* ── Eigene Webseiten ────────────────────────────────────────────────── */
+.web-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 8rem; }
+
+.field-label { font-size: 2rem; font-weight: 500; color: var(--faint); display: block; margin-bottom: 1.2rem; }
+.glyph-title { margin-top: 1rem; }
+
+.field {
+  display: block;
+  margin-bottom: 2.4rem;
+}
+.field input {
+  width: 100%;
+  font: inherit; font-size: 2.8rem; font-weight: 500;
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+  border: 0.2rem solid transparent;
+  border-radius: 2rem;
+  padding: 1.8rem 2.4rem;
+  outline: none;
+  transition: background .2s, border-color .2s;
+}
+.field input::placeholder { color: rgba(255,255,255,0.28); }
+.field.focused input { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.5); }
+.field input:focus { background: rgba(255,255,255,0.2); border-color: #fff; }
+
+.glyphs { display: flex; gap: 1.4rem; margin-bottom: 3rem; }
+.glyph {
+  width: 9rem; height: 9rem;
+  border-radius: 2.2rem;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--soft);
+  border: 0.2rem solid transparent;
+  transition: background .2s, border-color .2s, transform .2s var(--ease);
+}
+.glyph .logo { width: 4.4rem; height: 4.4rem; }
+.glyph.selected { border-color: #fff; color: #fff; }
+.glyph.focused { background: rgba(255,255,255,0.22); transform: scale(1.06); }
+
+.form-error { min-height: 3rem; font-size: 2rem; color: #ff8a80; margin-bottom: 1.6rem; }
+
+.pill {
+  font-size: 2.6rem; font-weight: 600;
+  padding: 1.8rem 3.6rem;
+  border-radius: 4rem;
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  transition: background .2s, color .2s, transform .2s var(--ease);
+}
+.pill.focused { background: #fff; color: #111; transform: scale(1.04); }
+
+.web-list { display: flex; flex-direction: column; gap: 1.2rem; }
+.web-empty { font-size: 2.2rem; color: rgba(255,255,255,0.35); }
+.web-item {
+  display: flex; align-items: center; gap: 2rem;
+  padding: 1.6rem 2rem;
+  border-radius: 2.2rem;
+  background: rgba(255,255,255,0.06);
+}
+.web-item .logo { width: 4rem; height: 4rem; color: var(--soft); flex: 0 0 4rem; }
+.web-item-text { flex: 1; min-width: 0; }
+.web-item-name { font-size: 2.4rem; font-weight: 500; }
+.web-item-url { font-size: 1.8rem; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.remove-btn {
+  font-size: 2rem; font-weight: 500;
+  padding: 1.2rem 2.2rem; border-radius: 3rem;
+  background: rgba(255,255,255,0.08); color: var(--soft);
+  transition: background .2s, color .2s;
+}
+.remove-btn.focused { background: #ff5f57; color: #fff; }

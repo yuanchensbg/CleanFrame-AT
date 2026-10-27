@@ -63,12 +63,13 @@ const lastInGroup = {};
 
 function scope() {
   if (document.body.classList.contains('apps-open')) return document.getElementById('overlay-apps');
+  if (document.body.classList.contains('web-open')) return document.getElementById('overlay-web');
   if (document.body.classList.contains('sheet-open')) return document.getElementById('sheet-smarthome');
   return document.getElementById('home');
 }
 
 function groupOf(el) {
-  return el.closest('.dock, .actions, .all-apps, .sheet') || document.body;
+  return el.closest('.dock, .actions, .all-apps, .sheet, .glyphs') || document.body;
 }
 
 function setFocus(el, silent) {
@@ -118,8 +119,9 @@ function resetFocus() {
 }
 
 function closeLayers() {
-  const open = document.body.classList.contains('apps-open') || document.body.classList.contains('sheet-open');
-  document.body.classList.remove('apps-open', 'sheet-open');
+  const layers = ['apps-open', 'sheet-open', 'web-open'];
+  const open = layers.some(c => document.body.classList.contains(c));
+  document.body.classList.remove(...layers);
   if (open) resetFocus();
   return open;
 }
@@ -128,6 +130,22 @@ const KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown:
 
 window.addEventListener('keydown', e => {
   if (handleArtKey(e)) return;
+
+  // Beim Tippen in ein Textfeld: Tasten gehören dem Feld, OK/Zurück/Hoch/Runter verlassen es
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      document.activeElement.blur();
+      if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); return; }
+    } else {
+      return;
+    }
+  }
+  if (e.key === 'Enter' && focused && focused.classList.contains('field')) {
+    e.preventDefault();
+    focused.querySelector('input').focus();
+    return;
+  }
+
   if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && focused && 'dimmable' in focused.dataset) {
     e.preventDefault();
     adjustBrightness(focused, e.key === 'ArrowRight' ? 10 : -10);
@@ -150,21 +168,130 @@ function launchApp(pkg) {
   else console.log('Starte', pkg);
 }
 
+function openUrl(url) {
+  if (Bridge && Bridge.openUrl) Bridge.openUrl(url);
+  else window.open(url, '_blank');
+}
+
+function dockCard(icon, name, onClick) {
+  const card = document.createElement('button');
+  card.className = 'card';
+  card.dataset.nav = '';
+  card.innerHTML = `<span class="logo" style="--icon:url('icons/${icon}.svg')"></span><span class="card-name"></span>`;
+  card.querySelector('.card-name').textContent = name;
+  card.addEventListener('click', onClick);
+  return card;
+}
+
+function renderDock() {
+  const dock = document.getElementById('dock');
+  dock.innerHTML = '';
+  (window.dockApps || []).forEach(app => dock.appendChild(dockCard(app.icon, app.name, () => launchApp(app.package))));
+  loadWebShortcuts().forEach(site => dock.appendChild(dockCard(site.glyph, site.name, () => openUrl(site.url))));
+  dock.appendChild(dockCard('glyph-plus', 'Webseite', openWebManager));
+}
+
 fetch('apps.json')
   .then(r => r.json())
   .then(apps => {
-    const dock = document.getElementById('dock');
-    apps.forEach(app => {
-      const card = document.createElement('button');
-      card.className = 'card';
-      card.dataset.nav = '';
-      card.innerHTML = `<span class="logo" style="--icon:url('icons/${app.icon}.svg')"></span><span class="card-name">${app.name}</span>`;
-      card.addEventListener('click', () => launchApp(app.package));
-      dock.appendChild(card);
-    });
     window.dockApps = apps;
-    setFocus(dock.firstElementChild, true);
+    renderDock();
+    setFocus(document.getElementById('dock').firstElementChild, true);
   });
+
+// ── Eigene Webseiten (im Fire TV gespeichert) ───────────────────────────
+const GLYPHS = ['glyph-play', 'glyph-tv', 'glyph-film', 'glyph-music', 'glyph-news', 'glyph-star', 'browser'];
+let chosenGlyph = GLYPHS[0];
+
+function loadWebShortcuts() {
+  try { return JSON.parse(localStorage.getItem('webShortcuts')) || []; } catch (_) { return []; }
+}
+
+function saveWebShortcuts(list) {
+  localStorage.setItem('webShortcuts', JSON.stringify(list));
+  renderDock();
+  renderWebList();
+}
+
+function normalizeUrl(raw) {
+  let text = raw.trim();
+  if (!text) return null;
+  if (!/^https?:\/\//i.test(text)) text = 'https://' + text;
+  try {
+    const u = new URL(text);
+    return u.hostname.includes('.') ? u.href : null;
+  } catch (_) { return null; }
+}
+
+function renderGlyphs() {
+  const box = document.getElementById('web-glyphs');
+  box.innerHTML = '';
+  GLYPHS.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'glyph' + (g === chosenGlyph ? ' selected' : '');
+    btn.dataset.nav = '';
+    btn.innerHTML = `<span class="logo" style="--icon:url('icons/${g}.svg')"></span>`;
+    btn.addEventListener('click', () => {
+      chosenGlyph = g;
+      box.querySelectorAll('.glyph').forEach(b => b.classList.toggle('selected', b === btn));
+    });
+    box.appendChild(btn);
+  });
+}
+
+function renderWebList() {
+  const list = document.getElementById('web-list');
+  const sites = loadWebShortcuts();
+  list.innerHTML = sites.length ? '' : '<div class="web-empty">Noch keine Webseiten gespeichert.</div>';
+  sites.forEach((site, i) => {
+    const row = document.createElement('div');
+    row.className = 'web-item';
+    row.innerHTML = `
+      <span class="logo" style="--icon:url('icons/${site.glyph}.svg')"></span>
+      <div class="web-item-text"><div class="web-item-name"></div><div class="web-item-url"></div></div>
+      <button class="remove-btn" data-nav>Entfernen</button>`;
+    row.querySelector('.web-item-name').textContent = site.name;
+    row.querySelector('.web-item-url').textContent = site.url.replace(/^https?:\/\//, '');
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      const next = loadWebShortcuts();
+      next.splice(i, 1);
+      saveWebShortcuts(next);
+      resetFocus();
+    });
+    list.appendChild(row);
+  });
+}
+
+function showWebError(text) {
+  document.getElementById('web-error').textContent = text;
+}
+
+function addWebShortcut() {
+  const nameEl = document.getElementById('web-name');
+  const urlEl = document.getElementById('web-url');
+  const url = normalizeUrl(urlEl.value);
+  if (!urlEl.value.trim()) return showWebError('Gib eine Adresse ein.');
+  if (!url) return showWebError('Das ist keine gültige Adresse, z.B. news.orf.at');
+  const name = nameEl.value.trim() || new URL(url).hostname.replace(/^www\./, '');
+  saveWebShortcuts([...loadWebShortcuts(), { name, url, glyph: chosenGlyph }]);
+  nameEl.value = '';
+  urlEl.value = '';
+  showWebError('');
+  closeLayers();
+  const cards = document.querySelectorAll('#dock .card');
+  setFocus(cards[cards.length - 2], true);
+}
+
+function openWebManager() {
+  renderGlyphs();
+  renderWebList();
+  showWebError('');
+  document.body.classList.add('web-open');
+  resetFocus();
+}
+
+document.getElementById('web-save').addEventListener('click', addWebShortcut);
+['web-name', 'web-url'].forEach(id => document.getElementById(id).addEventListener('input', () => showWebError('')));
 
 // ── Aktionen oben rechts ────────────────────────────────────────────────
 const ACTIONS = {
@@ -223,6 +350,7 @@ let artOn = false, artTimer = null, idleTimer = null;
 
 function startArt() {
   if (artOn) return;
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') { resetIdle(); return; }
   closeLayers();
   artOn = true;
   document.body.classList.add('art');

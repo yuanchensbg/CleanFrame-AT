@@ -105,6 +105,17 @@ class MainActivity : Activity() {
             }
         }
 
+        // Eigene Webseiten im Fire-TV-Browser (Silk) öffnen, sonst in einem anderen Browser
+        @JavascriptInterface
+        fun openUrl(url: String) {
+            val uri = Uri.parse(url)
+            if (uri.scheme != "https" && uri.scheme != "http") return
+            runOnUiThread {
+                val view = Intent(Intent.ACTION_VIEW, uri)
+                startSafely(Intent(view).setPackage("com.amazon.cloud9")) || startSafely(view)
+            }
+        }
+
         @JavascriptInterface
         fun openSettings() {
             runOnUiThread { startSafely(Intent(Settings.ACTION_SETTINGS)) }
