@@ -128,6 +128,12 @@ const KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown:
 
 window.addEventListener('keydown', e => {
   if (handleArtKey(e)) return;
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && focused && 'dimmable' in focused.dataset) {
+    e.preventDefault();
+    adjustBrightness(focused, e.key === 'ArrowRight' ? 10 : -10);
+    tick(e.key === 'ArrowRight' ? 1900 : 1400);
+    return;
+  }
   if (KEYS[e.key]) { e.preventDefault(); move(KEYS[e.key]); }
   else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (focused) { tick(1150); focused.click(); } }
   else if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'GoBack') { e.preventDefault(); closeLayers(); }

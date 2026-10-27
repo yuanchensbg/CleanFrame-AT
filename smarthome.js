@@ -74,8 +74,11 @@ async function loadGoveeDevices() {
     if (g.deviceName) d.name = g.deviceName;
     const st = parse(await http('POST', `${GOVEE}/device/state`, goveeHeaders(),
       JSON.stringify({ requestId: String(Date.now()), payload: { sku: d.model, device: d.deviceId } })));
-    const power = st?.payload?.capabilities?.find(c => c.instance === 'powerSwitch');
+    const caps = st?.payload?.capabilities || [];
+    const power = caps.find(c => c.instance === 'powerSwitch');
+    const bright = caps.find(c => c.instance === 'brightness');
     if (power) d.on = power.state?.value === 1;
+    if (bright && typeof bright.state?.value === 'number') d.brightness = bright.state.value;
     d.reachable = true;
   }
 }
@@ -98,7 +101,11 @@ function deviceState(d) {
   if (d.type === 'govee' && !goveeReady()) return 'API-Key fehlt';
   if (d.type === 'govee' && !d.deviceId) return 'Nicht gefunden';
   if (!d.on) return 'Aus';
-  return d.type === 'shelly-dimmer' && d.brightness ? `An · ${d.brightness} %` : 'An';
+  return isDimmable(d) && d.brightness ? `An · ${d.brightness} %` : 'An';
+}
+
+function isDimmable(d) {
+  return d.type === 'shelly-dimmer' || d.type === 'govee';
 }
 
 function renderDevices() {
@@ -112,9 +119,13 @@ function renderDevices() {
     row.className = 'sh-device' + (d.on ? ' is-on' : '');
     row.dataset.nav = '';
     row.dataset.device = d.id;
+    if (isDimmable(d)) row.dataset.dimmable = '';
     row.innerHTML = `
       <div class="row-icon">${d.type === 'shelly' ? ICONS.plug : ICONS.bulb}</div>
-      <div class="row-text"><div class="row-name"></div><div class="row-state">${deviceState(d)}</div></div>
+      <div class="row-text">
+        <div class="row-name"></div><div class="row-state">${deviceState(d)}</div>
+        ${isDimmable(d) ? `<div class="bright-bar"><div class="bright-fill" style="width:${d.on ? d.brightness || 100 : 0}%"></div></div>` : ''}
+      </div>
       <div class="toggle${d.on ? ' on' : ''}"><div class="toggle-knob"></div></div>
     `;
     row.querySelector('.row-name').textContent = d.name;
@@ -130,6 +141,8 @@ async function toggleDevice(d, row) {
   row.classList.toggle('is-on', d.on);
   row.querySelector('.toggle').classList.toggle('on', d.on);
   row.querySelector('.row-state').textContent = deviceState(d);
+  const fill = row.querySelector('.bright-fill');
+  if (fill) fill.style.width = (d.on ? d.brightness || 100 : 0) + '%';
 
   if (d.type === 'shelly-dimmer') {
     await http('GET', `http://${d.ip}/light/0?turn=${d.on ? 'on' : 'off'}`);
@@ -141,6 +154,36 @@ async function toggleDevice(d, row) {
       payload: { sku: d.model, device: d.deviceId, capability: { type: 'devices.capabilities.on_off', instance: 'powerSwitch', value: d.on ? 1 : 0 } },
     }));
   }
+}
+
+// Dimmen mit Links/Rechts: Anzeige sofort, Befehl erst wenn die Taste kurz ruht
+const dimTimers = {};
+
+function adjustBrightness(row, delta) {
+  const d = allDevices().find(x => x.id === row.dataset.device);
+  if (!d || (d.type === 'govee' && (!goveeReady() || !d.deviceId))) return;
+  if (!d.on && delta < 0) return;
+  const current = d.on ? d.brightness || 100 : 0;
+  d.brightness = Math.min(100, Math.max(1, Math.round(current / 10) * 10 + delta));
+  d.on = true;
+
+  row.classList.add('is-on');
+  row.querySelector('.toggle').classList.add('on');
+  row.querySelector('.row-state').textContent = deviceState(d);
+  row.querySelector('.bright-fill').style.width = d.brightness + '%';
+
+  clearTimeout(dimTimers[d.id]);
+  dimTimers[d.id] = setTimeout(() => sendBrightness(d), 350);
+}
+
+function sendBrightness(d) {
+  if (d.type === 'shelly-dimmer') {
+    return http('GET', `http://${d.ip}/light/0?turn=on&brightness=${d.brightness}`);
+  }
+  return http('POST', `${GOVEE}/device/control`, goveeHeaders(), JSON.stringify({
+    requestId: String(Date.now()),
+    payload: { sku: d.model, device: d.deviceId, capability: { type: 'devices.capabilities.range', instance: 'brightness', value: d.brightness } },
+  }));
 }
 
 initSmartHome();

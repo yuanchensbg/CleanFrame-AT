@@ -177,7 +177,8 @@ body.sheet-open .home { opacity: 0.35; }
 
 .sheet-inner { padding: 5.2rem 4.4rem; height: 100%; overflow-y: auto; scrollbar-width: none; }
 .sheet-title { font-size: 4rem; font-weight: 600; letter-spacing: -0.06rem; margin-bottom: 3.6rem; }
-.sheet-label { font-size: 2rem; font-weight: 500; color: var(--faint); margin: 4rem 0 1.8rem; }
+.sheet-label { font-size: 2rem; font-weight: 500; color: var(--faint); margin: 4rem 0 1.8rem; display: flex; justify-content: space-between; }
+.sheet-hint { font-size: 1.7rem; font-weight: 400; color: rgba(255,255,255,0.32); }
 
 .sheet-row, .sh-device {
   display: flex; align-items: center; gap: 2rem;
@@ -232,7 +233,7 @@ body.sheet-open .home { opacity: 0.35; }
 .sh-tab.focused:not(.active) { background: rgba(255,255,255,0.22); color: #fff; }
 
 .bright-bar { height: 0.5rem; border-radius: 0.3rem; background: rgba(255,255,255,0.12); margin-top: 1rem; overflow: hidden; }
-.bright-fill { height: 100%; background: #ffd27a; }
+.bright-fill { height: 100%; background: #ffd27a; transition: width .2s var(--ease); }
 
 /* ── Alle Apps ───────────────────────────────────────────────────────── */
 .overlay {
