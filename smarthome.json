@@ -4,31 +4,9 @@
       "id": "living",
       "name": "Wohnzimmer",
       "devices": [
-        {
-          "id": "shelly1",
-          "name": "Shelly",
-          "type": "shelly",
-          "on": false,
-          "ip": "192.168.178.59"
-        },
-        {
-          "id": "govee1",
-          "name": "Govee Lampe 1",
-          "type": "govee",
-          "on": false,
-          "brightness": 100,
-          "deviceId": "GOVEE_DEVICE_ID_1",
-          "model": "H6006"
-        },
-        {
-          "id": "govee2",
-          "name": "Govee Lampe 2",
-          "type": "govee",
-          "on": false,
-          "brightness": 100,
-          "deviceId": "GOVEE_DEVICE_ID_2",
-          "model": "H600A"
-        }
+        { "id": "shelly1", "name": "Shelly Dimmer", "type": "shelly-dimmer", "ip": "192.168.178.59", "on": false },
+        { "id": "govee1",  "name": "Govee Lampe 1", "type": "govee", "model": "H6006", "on": false },
+        { "id": "govee2",  "name": "Govee Lampe 2", "type": "govee", "model": "H600A", "on": false }
       ]
     }
   ],

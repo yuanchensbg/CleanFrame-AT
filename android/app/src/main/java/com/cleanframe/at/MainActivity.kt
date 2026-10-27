@@ -125,6 +125,37 @@ class MainActivity : Activity() {
             }
         }
 
+        // Smart-Home-Anfragen laufen über die App, weil Shelly und Govee keine Browser-Anfragen (CORS) erlauben
+        @JavascriptInterface
+        fun http(callbackId: String, method: String, url: String, headersJson: String, body: String) {
+            Thread {
+                val result = JSONObject.quote(request(method, url, headersJson, body))
+                runOnUiThread {
+                    webView.evaluateJavascript("window.__bridgeHttpDone(${JSONObject.quote(callbackId)}, $result)", null)
+                }
+            }.start()
+        }
+
+        private fun request(method: String, url: String, headersJson: String, body: String): String {
+            val uri = Uri.parse(url)
+            if (!isAllowedHost(uri.host ?: "")) return ""
+            return try {
+                val conn = (java.net.URL(url).openConnection() as java.net.HttpURLConnection).apply {
+                    requestMethod = method
+                    connectTimeout = 4000
+                    readTimeout = 6000
+                    val headers = JSONObject(headersJson.ifEmpty { "{}" })
+                    headers.keys().forEach { setRequestProperty(it, headers.getString(it)) }
+                    if (body.isNotEmpty()) {
+                        doOutput = true
+                        outputStream.use { it.write(body.toByteArray()) }
+                    }
+                }
+                val stream = if (conn.responseCode < 400) conn.inputStream else conn.errorStream
+                stream?.bufferedReader()?.use { it.readText() } ?: ""
+            } catch (_: Exception) { "" }
+        }
+
         @JavascriptInterface
         fun getInstalledAppsJson(): String {
             val pm = packageManager
@@ -150,6 +181,13 @@ class MainActivity : Activity() {
                 .sortedBy { it.getString("label").lowercase() }
             return JSONArray(sorted).toString()
         }
+    }
+
+    private fun isAllowedHost(host: String): Boolean {
+        if (host == "openapi.api.govee.com") return true
+        val p = host.split(".").mapNotNull { it.toIntOrNull() }
+        if (p.size != 4) return false
+        return p[0] == 10 || (p[0] == 192 && p[1] == 168) || (p[0] == 172 && p[1] in 16..31)
     }
 
     private fun toBase64(drawable: Drawable): String {

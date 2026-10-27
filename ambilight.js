@@ -11,16 +11,9 @@ function renderAmbilight() {
   document.getElementById('ambi-state').textContent = ambilightOn ? 'An' : 'Aus';
 }
 
-async function setAmbilight(on) {
-  try {
-    await fetch(`http://${PHILIPS_TV_IP}:${PHILIPS_PORT}/1/ambilight/power`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ power: on ? 'On' : 'Off' }),
-    });
-  } catch (e) {
-    console.log('Ambilight nicht erreichbar:', e.message);
-  }
+function setAmbilight(on) {
+  return http('POST', `http://${PHILIPS_TV_IP}:${PHILIPS_PORT}/1/ambilight/power`,
+    { 'Content-Type': 'application/json' }, JSON.stringify({ power: on ? 'On' : 'Off' }));
 }
 
 function toggleAmbilight() {
@@ -30,10 +23,8 @@ function toggleAmbilight() {
 }
 
 async function getAmbilightStatus() {
-  try {
-    const res = await fetch(`http://${PHILIPS_TV_IP}:${PHILIPS_PORT}/1/ambilight/power`);
-    ambilightOn = (await res.json()).power === 'On';
-  } catch (_) { /* TV nicht erreichbar, Anzeige bleibt auf „An“ */ }
+  const status = parse(await http('GET', `http://${PHILIPS_TV_IP}:${PHILIPS_PORT}/1/ambilight/power`));
+  if (status) ambilightOn = status.power === 'On';
   renderAmbilight();
 }
 

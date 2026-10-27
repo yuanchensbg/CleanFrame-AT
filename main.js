@@ -87,14 +87,18 @@ function move(dir) {
 
   const r = focused.getBoundingClientRect();
   const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const horizontal = dir === 'left' || dir === 'right';
+  const ownGroup = groupOf(focused);
   let best = null, bestScore = Infinity;
 
   for (const el of items) {
     if (el === focused) continue;
+    // Links/Rechts bleibt in der eigenen Reihe (Dock, Symbolleiste)
+    if (horizontal && ownGroup !== document.body && groupOf(el) !== ownGroup) continue;
     const b = el.getBoundingClientRect();
     const dx = b.left + b.width / 2 - cx, dy = b.top + b.height / 2 - cy;
     const along = { left: -dx, right: dx, up: -dy, down: dy }[dir];
-    const across = dir === 'left' || dir === 'right' ? Math.abs(dy) : Math.abs(dx);
+    const across = horizontal ? Math.abs(dy) : Math.abs(dx);
     if (along <= 1) continue;
     const score = along + across * 2.5;
     if (score < bestScore) { bestScore = score; best = el; }
