@@ -91,6 +91,23 @@ html, body {
   letter-spacing: 0.15px;
 }
 
+.header-right {
+  display: flex; align-items: center; gap: 18px;
+}
+
+.weather-widget {
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: opacity .6s;
+  margin-top: 8px;
+}
+.weather-widget.ready { opacity: 1; }
+.weather-icon { font-size: 22px; }
+.weather-temp { font-size: 30px; font-weight: 200; letter-spacing: -1px; }
+.weather-meta {
+  display: flex; flex-direction: column;
+  font-size: 11px; color: var(--sub); line-height: 1.35;
+}
+
 .alexa-btn {
   display: flex; align-items: center; gap: 8px;
   font-size: 12px; color: var(--dim);
@@ -339,4 +356,55 @@ html, body {
   color: var(--sub);
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* ── Screensaver ─────────────────────────────────────────────────────── */
+.launcher, .bg-overlay { transition: opacity 1.2s ease; }
+
+.saver {
+  position: fixed; inset: 0; z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 40%);
+}
+
+body.saver-on .launcher { opacity: 0; pointer-events: none; }
+body.saver-on .bg-overlay { opacity: 0; }
+body.saver-on .saver { opacity: 1; }
+body.saver-on { cursor: none; }
+
+.saver-bottom {
+  position: absolute; left: 72px; right: 72px; bottom: 64px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+
+.saver-clock {
+  font-size: 120px; font-weight: 100;
+  letter-spacing: -7px; line-height: 1;
+  text-shadow: 0 4px 60px rgba(0,0,0,0.45);
+}
+
+.saver-date {
+  font-size: 18px; font-weight: 300;
+  color: rgba(255,255,255,0.7);
+  margin-top: 10px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.saver-weather {
+  text-align: right;
+  opacity: 0; transition: opacity .6s;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+.saver-weather.ready { opacity: 1; }
+
+.saver-weather-main {
+  font-size: 52px; font-weight: 200; letter-spacing: -2px;
+  display: flex; gap: 12px; justify-content: flex-end; align-items: center;
+}
+
+.saver-weather-sub {
+  font-size: 14px; color: rgba(255,255,255,0.65);
+  margin-top: 4px; font-weight: 300;
 }
