@@ -1,62 +1,12 @@
 [
-  {
-    "name": "Netflix",
-    "icon": "N",
-    "color": "#E50914",
-    "package": "com.netflix.ninja"
-  },
-  {
-    "name": "YouTube",
-    "icon": "▶",
-    "color": "#FF0000",
-    "package": "com.google.android.youtube.tv"
-  },
-  {
-    "name": "Prime Video",
-    "icon": "P",
-    "color": "#00A8E0",
-    "package": "com.amazon.avod.thirdpartyclient"
-  },
-  {
-    "name": "Disney+",
-    "icon": "D",
-    "color": "#113CCF",
-    "package": "com.disney.disneyplus"
-  },
-  {
-    "name": "ORF ON",
-    "icon": "O",
-    "color": "#CC0000",
-    "package": "at.orf.tvthek"
-  },
-  {
-    "name": "ServusTV",
-    "icon": "S",
-    "color": "#D40000",
-    "package": "com.redbull.tv"
-  },
-  {
-    "name": "Joyn",
-    "icon": "J",
-    "color": "#6200EE",
-    "package": "de.prosiebensat1digital.joyn"
-  },
-  {
-    "name": "Spotify",
-    "icon": "♫",
-    "color": "#1DB954",
-    "package": "com.spotify.tv.android"
-  },
-  {
-    "name": "Kodi",
-    "icon": "K",
-    "color": "#17B2E8",
-    "package": "org.xbmc.kodi"
-  },
-  {
-    "name": "Browser",
-    "icon": "⊕",
-    "color": "#555555",
-    "package": "com.amazon.cloud9"
-  }
+  { "id": "netflix",   "name": "Netflix",     "icon": "N", "color": "#E50914", "package": "com.netflix.ninja" },
+  { "id": "youtube",   "name": "YouTube",     "icon": "▶", "color": "#FF0000", "package": "com.google.android.youtube.tv" },
+  { "id": "prime",     "name": "Prime Video", "icon": "P", "color": "#00A8E0", "package": "com.amazon.avod.thirdpartyclient" },
+  { "id": "disney",    "name": "Disney+",     "icon": "D", "color": "#113CCF", "package": "com.disney.disneyplus" },
+  { "id": "orf",       "name": "ORF ON",      "icon": "O", "color": "#CC0000", "package": "at.orf.tvthek" },
+  { "id": "servus",    "name": "ServusTV",    "icon": "S", "color": "#D40000", "package": "com.redbull.tv" },
+  { "id": "joyn",      "name": "Joyn",        "icon": "J", "color": "#6200EE", "package": "de.prosiebensat1digital.joyn" },
+  { "id": "spotify",   "name": "Spotify",     "icon": "♫", "color": "#1DB954", "package": "com.spotify.tv.android" },
+  { "id": "kodi",      "name": "Kodi",        "icon": "K", "color": "#17B2E8", "package": "org.xbmc.kodi" },
+  { "id": "browser",   "name": "Browser",     "icon": "⊕", "color": "#888888", "package": "com.amazon.cloud9" }
 ]
