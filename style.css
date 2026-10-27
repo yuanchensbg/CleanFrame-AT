@@ -1,0 +1,208 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0d0d0d;
+  --surface: #181818;
+  --surface-hover: #222;
+  --border: #2a2a2a;
+  --text: #ffffff;
+  --text-muted: #666;
+  --ambi-color: #e06c33;
+  --radius: 14px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+.launcher {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 40px 56px 32px;
+  gap: 32px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.clock {
+  font-size: 64px;
+  font-weight: 200;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.date {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+.weather {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding-top: 8px;
+}
+
+/* Main */
+.main {
+  flex: 1;
+}
+
+.section-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.app-tile {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px 16px 18px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  outline: none;
+}
+
+.app-tile:hover,
+.app-tile:focus {
+  background: var(--surface-hover);
+  border-color: #444;
+  transform: scale(1.03);
+}
+
+.app-tile:active {
+  transform: scale(0.98);
+}
+
+.app-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.app-name {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.ambilight-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ambi-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ambi-color);
+  transition: background 0.3s;
+}
+
+.ambi-indicator.off {
+  background: #333;
+}
+
+.ambi-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.toggle {
+  width: 42px;
+  height: 24px;
+  background: #2a2a2a;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #333;
+  transition: background 0.2s;
+}
+
+.toggle.on {
+  background: #3a2010;
+  border-color: var(--ambi-color);
+}
+
+.toggle-knob {
+  width: 18px;
+  height: 18px;
+  background: #555;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: left 0.2s, background 0.2s;
+}
+
+.toggle.on .toggle-knob {
+  left: 21px;
+  background: var(--ambi-color);
+}
+
+.footer-right {
+  display: flex;
+  gap: 10px;
+}
+
+.footer-btn {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.footer-btn:hover,
+.footer-btn:focus {
+  background: var(--surface-hover);
+  color: var(--text);
+  outline: none;
+}

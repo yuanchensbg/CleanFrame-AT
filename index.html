@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CleanFrame AT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="launcher">
+
+    <header class="header">
+      <div class="header-left">
+        <div class="clock" id="clock">--:--</div>
+        <div class="date" id="date"></div>
+      </div>
+      <div class="header-right">
+        <div class="weather" id="weather">Österreich</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="section-label">Apps</div>
+      <div class="app-grid" id="app-grid">
+        <!-- Apps werden aus apps.json geladen -->
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="ambilight-control">
+        <div class="ambi-indicator" id="ambi-dot"></div>
+        <span class="ambi-label">Ambilight</span>
+        <div class="toggle" id="ambi-toggle" onclick="toggleAmbilight()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <button class="footer-btn" onclick="launchAmazon()">⊞ Amazon-Modus</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="ambilight.js"></script>
+  <script>
+    // Uhr
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = h + ':' + m;
+
+      const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+      const months = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+      document.getElementById('date').textContent =
+        days[now.getDay()] + ', ' + now.getDate() + '. ' + months[now.getMonth()];
+    }
+    updateClock();
+    setInterval(updateClock, 10000);
+
+    // Apps laden
+    fetch('apps.json')
+      .then(r => r.json())
+      .then(apps => {
+        const grid = document.getElementById('app-grid');
+        apps.forEach(app => {
+          const div = document.createElement('div');
+          div.className = 'app-tile';
+          div.setAttribute('tabindex', '0');
+          div.innerHTML = `
+            <div class="app-icon" style="background:${app.color}22; color:${app.color}">
+              ${app.icon}
+            </div>
+            <span class="app-name">${app.name}</span>
+          `;
+          div.addEventListener('click', () => launchApp(app.package));
+          div.addEventListener('keydown', e => {
+            if (e.key === 'Enter') launchApp(app.package);
+          });
+          grid.appendChild(div);
+        });
+      });
+
+    // App starten (Android Bridge)
+    function launchApp(pkg) {
+      if (window.Android) {
+        window.Android.launchApp(pkg);
+      } else {
+        alert('App: ' + pkg);
+      }
+    }
+
+    // Amazon-Modus (startet den originalen Fire TV Launcher)
+    function launchAmazon() {
+      launchApp('com.amazon.firelauncher');
+    }
+  </script>
+</body>
+</html>
