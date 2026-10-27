@@ -116,6 +116,15 @@ class MainActivity : Activity() {
             }
         }
 
+        // Während ein Video läuft, soll der Fire-TV-Bildschirmschoner nicht anspringen
+        @JavascriptInterface
+        fun keepScreenOn(on: Boolean) {
+            runOnUiThread {
+                if (on) window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                else window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        }
+
         @JavascriptInterface
         fun openSettings() {
             runOnUiThread { startSafely(Intent(Settings.ACTION_SETTINGS)) }

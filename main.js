@@ -64,12 +64,13 @@ const lastInGroup = {};
 function scope() {
   if (document.body.classList.contains('apps-open')) return document.getElementById('overlay-apps');
   if (document.body.classList.contains('web-open')) return document.getElementById('overlay-web');
+  if (document.body.classList.contains('media-open')) return document.getElementById('overlay-media');
   if (document.body.classList.contains('sheet-open')) return document.getElementById('sheet-smarthome');
   return document.getElementById('home');
 }
 
 function groupOf(el) {
-  return el.closest('.dock, .actions, .all-apps, .sheet, .glyphs') || document.body;
+  return el.closest('.dock, .actions, .all-apps, .sheet, .glyphs, .chips, .media-grid') || document.body;
 }
 
 function setFocus(el, silent) {
@@ -119,7 +120,7 @@ function resetFocus() {
 }
 
 function closeLayers() {
-  const layers = ['apps-open', 'sheet-open', 'web-open'];
+  const layers = ['apps-open', 'sheet-open', 'web-open', 'media-open'];
   const open = layers.some(c => document.body.classList.contains(c));
   document.body.classList.remove(...layers);
   if (open) resetFocus();
@@ -129,6 +130,7 @@ function closeLayers() {
 const KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
 
 window.addEventListener('keydown', e => {
+  if (typeof handlePlayerKey === 'function' && handlePlayerKey(e)) return;
   if (handleArtKey(e)) return;
 
   // Beim Tippen in ein Textfeld: Tasten gehören dem Feld, OK/Zurück/Hoch/Runter verlassen es
@@ -186,6 +188,7 @@ function dockCard(icon, name, onClick) {
 function renderDock() {
   const dock = document.getElementById('dock');
   dock.innerHTML = '';
+  dock.appendChild(dockCard('mediathek', 'Mediathek', () => openMediathek()));
   (window.dockApps || []).forEach(app => dock.appendChild(dockCard(app.icon, app.name, () => launchApp(app.package))));
   loadWebShortcuts().forEach(site => dock.appendChild(dockCard(site.glyph, site.name, () => openUrl(site.url))));
   dock.appendChild(dockCard('glyph-plus', 'Webseite', openWebManager));
@@ -350,7 +353,8 @@ let artOn = false, artTimer = null, idleTimer = null;
 
 function startArt() {
   if (artOn) return;
-  if (document.activeElement && document.activeElement.tagName === 'INPUT') { resetIdle(); return; }
+  const typing = document.activeElement && document.activeElement.tagName === 'INPUT';
+  if (typing || document.body.classList.contains('player-open')) { resetIdle(); return; }
   closeLayers();
   artOn = true;
   document.body.classList.add('art');
