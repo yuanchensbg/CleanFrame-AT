@@ -57,6 +57,17 @@ class MainActivity : Activity() {
         hideSystemBars()
         webView.loadUrl(launcherUrl)
         webView.requestFocus()
+
+        askOverlayPermissionOnce()
+    }
+
+    // Ohne diese Erlaubnis kann sich CleanFrame ab Android 10 nicht beim Einschalten nach vorne holen
+    private fun askOverlayPermissionOnce() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Settings.canDrawOverlays(this)) return
+        val prefs = getSharedPreferences("cleanframe", MODE_PRIVATE)
+        if (prefs.getBoolean("overlayAsked", false)) return
+        prefs.edit().putBoolean("overlayAsked", true).apply()
+        startSafely(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
     }
 
     override fun onResume() {

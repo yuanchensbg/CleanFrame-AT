@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- App-Bild in der Fire-TV-App-Reihe: Himmel als Verlauf, Berge als Vektor -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="135"
-                android:startColor="#1C2A3A"
-                android:endColor="#0A0A0A" />
+            <gradient android:angle="270" android:startColor="#2B3A5C" android:centerColor="#9C7A93" android:endColor="#F0AE84" />
         </shape>
     </item>
-    <item
-        android:gravity="center"
-        android:width="120dp"
-        android:height="4dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="2dp" />
-            <solid android:color="#FF7A35" />
-        </shape>
-    </item>
+    <item android:drawable="@drawable/banner_art" />
 </layer-list>
