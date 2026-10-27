@@ -149,7 +149,7 @@ html, body {
   -webkit-backdrop-filter: var(--blur);
   border-radius: var(--r);
   border: 1px solid var(--glass-b);
-  padding: 22px 14px 16px;
+  padding: 14px 10px 11px;
   text-align: center;
   cursor: pointer;
   outline: none;
@@ -167,17 +167,17 @@ html, body {
 .app-tile:active { transform: scale(0.97); }
 
 .app-icon-wrap {
-  width: 64px; height: 64px;
-  border-radius: 14px;
-  margin: 0 auto 12px;
+  width: 40px; height: 40px;
+  border-radius: 9px;
+  margin: 0 auto 9px;
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
 }
 
-.app-icon-wrap svg { width: 64px; height: 64px; display: block; }
+.app-icon-wrap svg { width: 40px; height: 40px; display: block; }
 
 .app-name {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--sub);
   font-weight: 400;
   letter-spacing: 0.15px;
