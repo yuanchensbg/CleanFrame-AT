@@ -1,0 +1,40 @@
+name: APK bauen
+
+on:
+  push:
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: APK bauen
+        working-directory: android
+        run: gradle assembleDebug --no-daemon
+
+      - name: Als Download veröffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk cleanframe.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest cleanframe.apk \
+            --title "CleanFrame (aktuell)" \
+            --notes "Auf dem Fire TV mit der Downloader-App installieren."
