@@ -1,4 +1,5 @@
 [
+  { "name": "Streamen",    "icon": "cast",    "package": "com.ionitech.airscreen" },
   { "name": "Netflix",     "icon": "netflix", "package": "com.netflix.ninja" },
   { "name": "YouTube",     "icon": "youtube", "package": "com.amazon.firetv.youtube" },
   { "name": "Spotify",     "icon": "spotify", "package": "com.spotify.tv.android" },

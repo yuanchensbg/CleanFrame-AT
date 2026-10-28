@@ -175,11 +175,21 @@ function openUrl(url) {
   else window.open(url, '_blank');
 }
 
+// Logos mit Schrift werden direkt eingebettet, damit sie die Webschrift nutzen können
+const INLINE_LOGOS = {
+  disney: `<svg viewBox="0 0 120 56" fill="currentColor"><path d="M6 34C20 2 90 -4 116 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><text x="2" y="50" font-family="'Dancing Script', cursive" font-weight="700" font-size="40">Disney</text><path d="M100 36h16M108 28v16" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg>`,
+};
+
+function logoHtml(icon) {
+  if (INLINE_LOGOS[icon]) return `<span class="logo logo-inline">${INLINE_LOGOS[icon]}</span>`;
+  return `<span class="logo" style="--icon:url('icons/${icon}.svg')"></span>`;
+}
+
 function dockCard(icon, name, onClick) {
   const card = document.createElement('button');
   card.className = 'card';
   card.dataset.nav = '';
-  card.innerHTML = `<span class="logo" style="--icon:url('icons/${icon}.svg')"></span><span class="card-name"></span>`;
+  card.innerHTML = `${logoHtml(icon)}<span class="card-name"></span>`;
   card.querySelector('.card-name').textContent = name;
   card.addEventListener('click', onClick);
   return card;
@@ -337,7 +347,7 @@ function openAllApps() {
     item.dataset.nav = '';
     const banner = app.image
       ? `<div class="app-banner" style="background-image:url('data:image/png;base64,${app.image}')"></div>`
-      : `<div class="app-banner"><span class="logo" style="--icon:url('icons/${app.logo || 'browser'}.svg')"></span></div>`;
+      : `<div class="app-banner">${logoHtml(app.logo || 'browser')}</div>`;
     item.innerHTML = `${banner}<div class="app-label"></div>`;
     item.querySelector('.app-label').textContent = app.label;
     item.addEventListener('click', () => { closeLayers(); launchApp(app.pkg); });
