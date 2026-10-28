@@ -215,7 +215,7 @@ class MainActivity : Activity() {
     }
 
     private fun isAllowedHost(host: String): Boolean {
-        if (host == "openapi.api.govee.com") return true
+        if (host == "openapi.api.govee.com" || host == "api.nuki.io") return true
         val p = host.split(".").mapNotNull { it.toIntOrNull() }
         if (p.size != 4) return false
         return p[0] == 10 || (p[0] == 192 && p[1] == 168) || (p[0] == 172 && p[1] in 16..31)

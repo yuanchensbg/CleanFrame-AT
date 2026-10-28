@@ -46,7 +46,7 @@ function renderGoveeKeyField() {
   const input = document.getElementById('govee-key');
   input.value = '';
   input.placeholder = key ? `Gespeichert: ••••${key.slice(-4)}  (leer lassen = behalten)` : 'Key aus der Govee-E-Mail';
-  document.getElementById('govee-key-label').textContent = key ? 'API-Key ändern' : 'API-Key';
+  document.getElementById('govee-key-label').textContent = key ? 'Govee API-Key ändern' : 'Govee API-Key';
 }
 
 async function saveGoveeKey(raw) {

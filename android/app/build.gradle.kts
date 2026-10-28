@@ -11,8 +11,8 @@ android {
         applicationId = "com.cleanframe.at"
         minSdk = 22
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
     }
 
     compileOptions {

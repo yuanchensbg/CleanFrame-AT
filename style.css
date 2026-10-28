@@ -444,3 +444,16 @@ body.player-open { cursor: none; }
 .player-bar { height: 100%; background: #fff; width: 0; transition: width .25s linear; }
 .player-row { display: flex; justify-content: space-between; font-size: 2rem; color: var(--soft); font-variant-numeric: tabular-nums; }
 .player-help { color: var(--faint); }
+
+/* ── Türschloss ──────────────────────────────────────────────────────── */
+.lock-row.is-locked .row-icon { background: rgba(52,199,89,0.22); color: #7ee2a0; }
+.lock-row.is-open .row-icon { background: rgba(255,159,10,0.25); color: #ffc46b; }
+.lock-badge {
+  font-size: 1.9rem; font-weight: 600;
+  padding: 0.8rem 2rem; border-radius: 2rem;
+  background: rgba(255,255,255,0.1); color: var(--soft);
+}
+.lock-row.is-locked .lock-badge { background: rgba(52,199,89,0.22); color: #7ee2a0; }
+.lock-row.is-open .lock-badge { background: rgba(255,159,10,0.25); color: #ffc46b; }
+.lock-row.confirm { background: rgba(255,159,10,0.22); }
+.lock-row.confirm .row-state { color: #ffc46b; }
