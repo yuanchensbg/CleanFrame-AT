@@ -9,6 +9,5 @@
         { "id": "govee2",  "name": "Govee Lampe 2", "type": "govee", "model": "H600A", "on": false }
       ]
     }
-  ],
-  "goveeApiKey": "HIER_API_KEY_EINTRAGEN"
+  ]
 }

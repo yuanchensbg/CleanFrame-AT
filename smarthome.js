@@ -28,13 +28,46 @@ function http(method, url, headers = {}, body = '') {
 
 function parse(text) { try { return JSON.parse(text); } catch (_) { return null; } }
 
+// Der Govee-Key wird nur auf dem Fire TV gespeichert, nie im öffentlichen GitHub-Projekt
+function goveeKey() {
+  return localStorage.getItem('goveeApiKey') || '';
+}
+
 function goveeHeaders() {
-  return { 'Govee-API-Key': smarthomeData.goveeApiKey, 'Content-Type': 'application/json' };
+  return { 'Govee-API-Key': goveeKey(), 'Content-Type': 'application/json' };
 }
 
 function goveeReady() {
-  return smarthomeData.goveeApiKey && smarthomeData.goveeApiKey !== 'HIER_API_KEY_EINTRAGEN';
+  return !!goveeKey();
 }
+
+function renderGoveeKeyField() {
+  const key = goveeKey();
+  const input = document.getElementById('govee-key');
+  input.value = '';
+  input.placeholder = key ? `Gespeichert: ••••${key.slice(-4)}  (leer lassen = behalten)` : 'Key aus der Govee-E-Mail';
+  document.getElementById('govee-key-label').textContent = key ? 'API-Key ändern' : 'API-Key';
+}
+
+async function saveGoveeKey(raw) {
+  const key = raw.trim();
+  const error = document.getElementById('govee-error');
+  if (!key) return;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key)) {
+    error.textContent = 'Der Key sieht so aus: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+    return;
+  }
+  localStorage.setItem('goveeApiKey', key);
+  error.textContent = 'Verbinde mit Govee …';
+  renderGoveeKeyField();
+  await loadGoveeDevices();
+  const found = allDevices().filter(d => d.type === 'govee' && d.deviceId).length;
+  error.textContent = found ? '' : 'Govee hat keine Lampen gefunden. Stimmt der Key?';
+  renderDevices();
+}
+
+document.getElementById('govee-key').addEventListener('change', e => saveGoveeKey(e.target.value));
+document.getElementById('govee-key').addEventListener('input', () => { document.getElementById('govee-error').textContent = ''; });
 
 function allDevices() {
   return smarthomeData.rooms.flatMap(r => r.devices);
@@ -49,6 +82,7 @@ async function initSmartHome() {
   }
   renderRooms();
   renderDevices();
+  renderGoveeKeyField();
   await Promise.all([loadShellyStates(), loadGoveeDevices()]);
   renderDevices();
 }
@@ -71,7 +105,6 @@ async function loadGoveeDevices() {
     if (i === -1) continue;
     const g = unused.splice(i, 1)[0];
     d.deviceId = g.device;
-    if (g.deviceName) d.name = g.deviceName;
     const st = parse(await http('POST', `${GOVEE}/device/state`, goveeHeaders(),
       JSON.stringify({ requestId: String(Date.now()), payload: { sku: d.model, device: d.deviceId } })));
     const caps = st?.payload?.capabilities || [];
